@@ -9,8 +9,9 @@ import { LuAlignLeft } from 'react-icons/lu';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import UserIcon from './UserIcon';
-import { links, linksLogin } from '@/utils/links';
+import { links } from '@/utils/links';
 import SignOutLink from './SignOutLink';
+import { SignInButton, SignedIn, SignedOut, SignUpButton } from '@clerk/nextjs';
 
 
 export default function LinksDropdown() {
@@ -28,14 +29,38 @@ export default function LinksDropdown() {
       {/* container */}
       <DropdownMenuContent className="w-52" align='start' sideOffset={10}> 
         {/* items */}
-        {links.map((link,idx) => {
-            const {href, label} = link;
-            return (
-              <DropdownMenuItem key={idx}>
-                <Link className='capitalize w-full' href={href}>{label}</Link>
-              </DropdownMenuItem>
-            )
-          })}      
+        {/* user unregistered */}
+        <SignedOut>
+          {/* login */}
+          <DropdownMenuItem>
+            <SignInButton mode='modal'>
+              <button className='w-full text-left'>Login</button>
+            </SignInButton>
+          </DropdownMenuItem>
+          {/* register */}
+          <DropdownMenuSeparator/>
+          <DropdownMenuItem>
+            <SignUpButton mode='modal'>
+              <button className='w-full text-left'>Register</button>
+            </SignUpButton>
+          </DropdownMenuItem>
+        </SignedOut>
+        {/* user registered */}
+        <SignedIn>
+          {links.map((link,idx) => {
+              const {href, label} = link;
+              return (
+                <DropdownMenuItem key={idx}>
+                  <Link className='capitalize w-full' href={href}>{label}</Link>
+                </DropdownMenuItem>
+              )
+            })}
+          <DropdownMenuSeparator/>
+          {/* logout */}
+          <DropdownMenuItem>
+            <SignOutLink/>
+          </DropdownMenuItem>      
+        </SignedIn>
       </DropdownMenuContent>
     </DropdownMenu>
   )
