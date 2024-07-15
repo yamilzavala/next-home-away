@@ -10,9 +10,12 @@ export const createProfileAction = async (prevState:any, formData: FormData) => 
     const user = await currentUser();
     if(!user) throw new Error('Please login to create a new profile')
     
+    //Server component
     const rawData = Object.fromEntries(formData);
+    //Zod validations
     const validatedFields = profileSchema.parse(rawData)
 
+    //ORM
     await prisma.profile.create({
       data:{
          clerkId: user.id,
@@ -22,6 +25,7 @@ export const createProfileAction = async (prevState:any, formData: FormData) => 
       }
     })
 
+    //Crerk
     await clerkClient.users.updateUserMetadata(user.id, {
       privateMetadata: {
          hasProfile: true
@@ -33,4 +37,25 @@ export const createProfileAction = async (prevState:any, formData: FormData) => 
     }
    }
    redirect('/')
+}
+
+export const fetchProfileImage = async () => {
+   try {
+      const user = await currentUser(); 
+      if(!user) return null;  
+      const profile = await prisma.profile.findUnique({
+         where: {
+            clerkId: user.id
+         },
+         select: {
+            profileImage: true
+         }
+      })
+      return profile?.profileImage
+   } catch (error) {
+      return {
+         message: error instanceof Error ? error.message : 'There was an error fetching profile image'
+      }
+   }
+   
 }
