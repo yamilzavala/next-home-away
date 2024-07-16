@@ -1,9 +1,25 @@
 'use server'
 import { profileSchema } from "./schemas";
-import prisma from './db';
+import db from './db';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+
+//helper
+const getAuthUser = async () => {
+   const user = await currentUser();
+   if(!user) throw new Error('You must be logged in to access this route')
+   if(!user.privateMetadata.hasProfile) redirect('/profile/create')
+   return user;
+}
+
+//helper
+const renderError = (error:unknown):{message:string} => {
+   console.log(error);
+   return {
+      message: error instanceof Error ? error.message : 'There was an error'
+   }
+}
 
 export const createProfileAction = async (prevState:any, formData: FormData) => {
    try {
@@ -16,7 +32,7 @@ export const createProfileAction = async (prevState:any, formData: FormData) => 
     const validatedFields = profileSchema.parse(rawData)
 
     //ORM
-    await prisma.profile.create({
+    await db.profile.create({
       data:{
          clerkId: user.id,
          email: user.emailAddresses[0].emailAddress,
@@ -43,7 +59,7 @@ export const fetchProfileImage = async () => {
    try {
       const user = await currentUser(); 
       if(!user) return null;  
-      const profile = await prisma.profile.findUnique({
+      const profile = await db.profile.findUnique({
          where: {
             clerkId: user.id
          },
@@ -56,6 +72,41 @@ export const fetchProfileImage = async () => {
       return {
          message: error instanceof Error ? error.message : 'There was an error fetching profile image'
       }
+   }   
+}
+
+export const fetchProfile = async () => {
+   const user = await getAuthUser();
+   const profile = db.profile.findUnique({
+      where: {
+         clerkId: user.id
+      }
+   })
+   if(!profile) redirect('/profile/create')
+   return profile;
+}
+
+export const updateProfileAction = async (prevState: any, formData: FormData):Promise<{message: string}> => {
+   const user = await getAuthUser();
+
+   try {
+      const rawData = Object.fromEntries(formData)
+      const validatedFields = profileSchema.safeParse(rawData)
+      
+      if(!validatedFields.success) {
+         const errors = validatedFields.error.errors.map((error) => error.message)
+         throw new Error(errors.join(','))
+      }
+      
+      await db.profile.update({
+         where: {
+            clerkId: user.id
+         },
+         data: validatedFields
+      })
+      revalidatePath('/profile')
+      return {message: 'Profile updated successfully'}
+   } catch (error) {
+      return renderError(error)
    }
-   
 }
