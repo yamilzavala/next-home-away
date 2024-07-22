@@ -22,18 +22,18 @@ const ImageInputContainer = (props: ImageInputContainerProps) => {
     return (
         <div>
             {image ? 
-                <Image className='object-cover'
+                <Image className='rounded-md object-cover mb-4 w-24 h-24'
                 width={100}
                 height={100}
                 alt={name}
                 src={image}
                 /> :
-                <LuUser2 className='w-24 h-24 object-cover rounded-md text-white mb-4'/>
+                <LuUser2 className='w-24 h-24 bg-primary rounded-md text-white mb-4'/>
             }
 
-            <Button onClick={(prev) => setUpdateFormVisible(!prev) }
+            <Button onClick={() => setUpdateFormVisible((prev) => !prev)}
                 variant='outline' 
-                size='lg'>
+                size='sm'>
                 {text}
             </Button>
 
