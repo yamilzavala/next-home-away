@@ -30,23 +30,26 @@ export default function LinksDropdown() {
       <DropdownMenuContent className="w-52" align='start' sideOffset={10}> 
         {/* items */}
         {/* user unregistered */}
-        <SignedOut>
-          {/* login */}
+
+        {/* <SignedOut>
+         
           <DropdownMenuItem>
             <SignInButton mode='modal'>
               <button className='w-full text-left'>Login</button>
             </SignInButton>
           </DropdownMenuItem>
-          {/* register */}
+         
           <DropdownMenuSeparator/>
+
           <DropdownMenuItem>
             <SignUpButton mode='modal'>
               <button className='w-full text-left'>Register</button>
             </SignUpButton>
           </DropdownMenuItem>
-        </SignedOut>
+        </SignedOut> */}
         {/* user registered */}
-        <SignedIn>
+
+        {/* <SignedIn> */}
           {links.map((link,idx) => {
               const {href, label} = link;
               return (
@@ -55,12 +58,12 @@ export default function LinksDropdown() {
                 </DropdownMenuItem>
               )
             })}
-          <DropdownMenuSeparator/>
+          {/* <DropdownMenuSeparator/> */}
           {/* logout */}
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <SignOutLink/>
-          </DropdownMenuItem>      
-        </SignedIn>
+          </DropdownMenuItem>       */}
+        {/* </SignedIn> */}
       </DropdownMenuContent>
     </DropdownMenu>
   )
