@@ -22,13 +22,15 @@ export const imageSchema = z.object({
 
 function validateFile() {
     const maxUploadSize = 1024 * 1024;
-    const acceptedFileTypes = ['image/'];
+    const acceptedFilesTypes = ['image/'];
     return z
-        .instanceof(File)
-        .refine((file) => {
-            return !file || file.size <= maxUploadSize;
-        }, `File size must be less than 1 MB`)
-        .refine((file) => {
-            return !file || acceptedFileTypes.some((type) => file.type.startsWith(type))
-        }, 'File must be an image')
-}
+      .instanceof(File)
+      .refine((file) => {
+        return !file || file.size <= maxUploadSize;
+      }, 'File size must be less than 1 MB')
+      .refine((file) => {
+        return (
+          !file || acceptedFilesTypes.some((type) => file.type.startsWith(type))
+        );
+      }, 'File must be an image');
+  }
