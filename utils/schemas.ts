@@ -7,18 +7,18 @@ export const profileSchema = z.object({
     username: z.string().min(2, {message: 'User Name must be at least 2 characters'}),
 })
  
-export function validateWithZodSchema<T>(schema: ZodSchema<T>, data: unknown):T {
+export function validateWithZodSchema<T>(
+    schema: ZodSchema<T>,
+    data: unknown
+  ): T {
     const result = schema.safeParse(data);
-    if(!result.success) {
-        const errors = result.error.errors.map((error) => error.message)
-        throw new Error(errors.join(','))
-     }
-    return result.data; 
+  
+    if (!result.success) {
+      const errors = result.error.errors.map((error) => error.message);
+      throw new Error(errors.join(','));
+    }
+    return result.data;
 }
-
-export const imageSchema = z.object({
-    image: validateFile()
-})
 
 function validateFile() {
     const maxUploadSize = 1024 * 1024;
