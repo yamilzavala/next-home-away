@@ -129,3 +129,20 @@ export const updateProfileImageAction = async (
      return renderError(error);
    }
  };
+
+ export const createPropertyAction = async (prevState: any, formData: FormData): Promise<{message: string}>=> {
+   try {
+      const rawData = Object.fromEntries(formData);
+      //zod validation
+      const validatedFields = validateWithZodSchema(profileSchema, rawData)
+      //ORM
+      // db.property.create({
+      //    data: validatedFields
+      // })
+      // revalidatePath('/property/create')
+      // return { message: 'Property created successfully' };
+   } catch (error) {
+      return renderError(error);
+   }
+   //redirect('/')
+ }
